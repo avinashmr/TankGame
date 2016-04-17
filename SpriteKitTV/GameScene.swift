@@ -213,7 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         monster.physicsBody?.dynamic = true // 2
         monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
         monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster | PhysicsCategory.Player // 5
+        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster // 5
         
         // Add the monster to the scene
         addChild(monster)
