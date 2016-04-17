@@ -16,6 +16,7 @@ struct PhysicsCategory {
     static let Player    : UInt32 = 0b100     // 4
     static let Goal      : UInt32 = 0b1000    // 8
     static let Border    : UInt32 = 0b10000   // 16
+
 }
 
 class GameConstants {
@@ -102,21 +103,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        addChild(radialGravityField)
         
         
-        self.physicsWorld.gravity = CGVectorMake(0, 0)
+        self.physicsWorld.gravity = CGVectorMake(0.1, 0)
         physicsWorld.contactDelegate = self
 
         
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(fireBullet),
-                SKAction.waitForDuration(0.25)
+                SKAction.waitForDuration(0.75)
                 ])
             ))
         
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addField),
-                SKAction.waitForDuration(5.0)
+                SKAction.waitForDuration(3.0)
                 ])
             ))
         
@@ -175,6 +176,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             physics.contactTestBitMask = PhysicsCategory.Monster
             physics.collisionBitMask = PhysicsCategory.None
             physics.usesPreciseCollisionDetection = true
+            physics.angularVelocity = 5.0
         }
         
         let offset = CGPoint(x: sin(player.zRotation), y: -cos(player.zRotation))
@@ -205,11 +207,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         circle.position = CGPointMake(size.width, actualY)
         circle.strokeColor = SKColor.redColor()
         circle.glowWidth = 40.0
-        circle.alpha = 0.6
+        circle.alpha = 0.8
         circle.fillColor = SKColor.yellowColor()
         circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
         circle.physicsBody?.dynamic = true
         circle.physicsBody?.affectedByGravity = false
+        circle.physicsBody?.categoryBitMask = PhysicsCategory.None
+        circle.physicsBody?.contactTestBitMask = PhysicsCategory.None
         circle.physicsBody?.collisionBitMask = PhysicsCategory.None
         addChild(circle)
         
@@ -226,13 +230,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let radialGravityField = SKFieldNode.radialGravityField()
         radialGravityField.position = CGPoint(x: size.width, y: actualY)
         radialGravityField.strength = 1
+        radialGravityField.physicsBody?.categoryBitMask = PhysicsCategory.None
+        radialGravityField.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        radialGravityField.physicsBody?.collisionBitMask = PhysicsCategory.None
         radialGravityField.region = SKRegion(radius: 200.0)
         
         addChild(radialGravityField)
         
         
         // Determine speed of the monster
-        let actualDuration = random(min: CGFloat(4.0), max: CGFloat(12.0))
+        let actualDuration = random(min: CGFloat(4.0), max: CGFloat(8.0))
         
         // Create the actions
         let actionMove = SKAction.moveTo(finalPosition, duration: Double(actualDuration))
