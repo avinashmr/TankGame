@@ -193,12 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func addField() {
-        
-        let monster = SKSpriteNode(imageNamed: "tank")
-        monster.color = UIColor.redColor()
-        
-        monster.colorBlendFactor = 0.9
-        monster.zRotation = CGFloat(-90.0.degreesToRadians)
+
         
         let actualY = random(min: 0, max: size.height)
         
@@ -219,13 +214,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Determine where to spawn the monster along the Y axis
         
-        monster.position = CGPoint(x: size.width, y: actualY)
-        
         let finalPosition = CGPoint(x: 0.0, y: actualY)
 
-        
-        // Add the monster to the scene
-        //addChild(monster)
         
         let radialGravityField = SKFieldNode.radialGravityField()
         radialGravityField.position = CGPoint(x: size.width, y: actualY)
