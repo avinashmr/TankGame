@@ -74,16 +74,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         setupControls()
-
-        grass.anchorPoint = CGPointMake(0.5, 0.5)
-        grass.size.height = size.height
-        grass.size.width = size.width
-        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+//
+//        grass.anchorPoint = CGPointMake(0.5, 0.5)
+//        grass.size.height = size.height
+//        grass.size.width = size.width
+//        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+//        
+//        addChild(grass)
         
-        addChild(grass)
         
-        
-        //backgroundColor = SKColor.darkGrayColor()
+        backgroundColor = SKColor.greenColor()
         // 3
         player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
         player.zRotation = CGFloat(90.0.degreesToRadians)
@@ -197,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         monster.physicsBody?.dynamic = true // 2
         monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
         monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-//        monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
+        monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
         
         // Add the monster to the scene
         addChild(monster)
