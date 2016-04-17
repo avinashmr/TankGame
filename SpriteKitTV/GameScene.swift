@@ -109,12 +109,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ])
             ))
         
-//        runAction(SKAction.repeatActionForever(
-//            SKAction.sequence([
-//                SKAction.runBlock(addField),
-//                SKAction.waitForDuration(1.0)
-//                ])
-//            ))
+        runAction(SKAction.repeatActionForever(
+            SKAction.sequence([
+                SKAction.runBlock(addField),
+                SKAction.waitForDuration(1.0)
+                ])
+            ))
         
         
         let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
@@ -158,7 +158,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addField() {
         
+        let monster = SKSpriteNode(imageNamed: "tank")
+        monster.color = UIColor.redColor()
         
+        monster.colorBlendFactor = 0.9
+        monster.zRotation = CGFloat(-90.0.degreesToRadians)
+        
+        
+        // Determine where to spawn the monster along the Y axis
+        let actualY = random(min: 0, max: size.height)
+        monster.position = CGPoint(x: size.width, y: actualY)
+        
+        let finalPosition = CGPoint(x: 0.0, y: actualY)
+
+        
+        // Add the monster to the scene
+        addChild(monster)
+        
+        
+        // Determine speed of the monster
+        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
+        
+        // Create the actions
+        let actionMove = SKAction.moveTo(finalPosition, duration: Double(actualDuration))
+        let actionMoveDone = SKAction.removeFromParent()
+        
+        let loseAction = SKAction.runBlock() {
+            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: false)
+            self.view?.presentScene(gameOverScene, transition: reveal)
+        }
+        monster.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
     }
     
