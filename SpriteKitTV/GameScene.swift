@@ -56,7 +56,7 @@ extension Float  {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var goalCount = 0
-    
+    var damageCount = 0
     // 1
     let player = SKSpriteNode(imageNamed: "tank")
     let grass = SKSpriteNode(imageNamed: "grass")
@@ -106,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             physics.dynamic = true
             physics.categoryBitMask = PhysicsCategory.Player
             physics.contactTestBitMask = PhysicsCategory.Monster
-            physics.collisionBitMask = PhysicsCategory.Border | PhysicsCategory.Monster | PhysicsCategory.Goal
+            physics.collisionBitMask = PhysicsCategory.Border | PhysicsCategory.Goal | PhysicsCategory.Monster
             //            physics.pinned = true
             //            physics.angularDamping = 1.0
         }
@@ -425,6 +425,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.removeFromParent()
     }
     
+    func monsterDidCollideWithPlayer(projectile:SKSpriteNode) {
+//        print("Monster and player")
+        damageCount++
+    }
+    
     
     func didBeginContact(contact: SKPhysicsContact) {
         
@@ -457,6 +462,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)) {
                 if let node = secondBody.node {
                     monsterDidCollideWithProjectile(node as! SKSpriteNode)
+                }
+        }
+        if ((firstBody.categoryBitMask & PhysicsCategory.Monster != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Player != 0)) {
+                if let node = firstBody.node {
+                    monsterDidCollideWithPlayer(node as! SKSpriteNode)
                 }
         }
     }
