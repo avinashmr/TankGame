@@ -13,6 +13,16 @@ struct PhysicsCategory {
     static let All       : UInt32 = UInt32.max
     static let Monster   : UInt32 = 0b1       // 1
     static let Projectile: UInt32 = 0b10      // 2
+    static let Player    : UInt32 = 0b100     // 4
+}
+
+class GameConstants {
+    static let moveDistance = CGFloat(20.0)
+    static let moveDuration = 0.1
+    static let moveLeft = CGPoint(x: -moveDistance, y: 0.0)
+    static let moveRight = CGPoint(x: moveDistance, y: 0.0)
+    static let moveUp = CGPoint(x: 0.0, y: moveDistance)
+    static let moveDown = CGPoint(x: 0.0, y: -moveDistance)
 }
 
 extension Int {
@@ -60,7 +70,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let grass = SKSpriteNode(imageNamed: "grass")
     
     override func didMoveToView(view: SKView) {
-        // 2
+        
+        
+        
+        setupControls()
 
         grass.anchorPoint = CGPointMake(0.5, 0.5)
         grass.size.height = size.height
@@ -92,6 +105,56 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(backgroundMusic)
     }
     
+    func upArrow(gesture: UITapGestureRecognizer) {
+        
+        let moveBy = CGPoint(x: sin(-player.zRotation), y: cos(player.zRotation)) * -GameConstants.moveDistance
+        //        print(player.zRotation)
+        //        print(moveBy)
+        let newPosition = player.position + moveBy
+        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
+        self.player.runAction(action)
+    }
+    func downArrow(gesture: UITapGestureRecognizer) {
+        let moveBy = CGPoint(x: sin(-player.zRotation), y: cos(player.zRotation)) * GameConstants.moveDistance
+        let newPosition = player.position + moveBy
+        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
+        self.player.runAction(action)
+    }
+    func leftArrow(gesture: UITapGestureRecognizer) {
+        let newPosition = player.position + GameConstants.moveLeft
+        //        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
+        let action2 = SKAction.rotateByAngle(CGFloat(M_PI/2.0), duration:GameConstants.moveDuration)
+        self.player.runAction(action2)
+    }
+    func rightArrow(gesture: UITapGestureRecognizer) {
+        let newPosition = player.position + GameConstants.moveRight
+        //        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
+        let action2 = SKAction.rotateByAngle(CGFloat(-M_PI/2.0), duration:GameConstants.moveDuration)
+        self.player.runAction(action2)
+    }
+    
+    
+    
+    
+    func setupControls() {
+        let tapRecognizer1 = UITapGestureRecognizer(target: self, action: "upArrow:")
+        tapRecognizer1.allowedPressTypes = [NSNumber(integer: UIPressType.UpArrow.rawValue)];
+        self.view!.addGestureRecognizer(tapRecognizer1)
+        
+        let tapRecognizer2 = UITapGestureRecognizer(target: self, action: "downArrow:")
+        tapRecognizer2.allowedPressTypes = [NSNumber(integer: UIPressType.DownArrow.rawValue)];
+        self.view!.addGestureRecognizer(tapRecognizer2)
+        
+        let tapRecognizer3 = UITapGestureRecognizer(target: self, action: "leftArrow:")
+        tapRecognizer3.allowedPressTypes = [NSNumber(integer: UIPressType.LeftArrow.rawValue)];
+        self.view!.addGestureRecognizer(tapRecognizer3)
+        
+        let tapRecognizer4 = UITapGestureRecognizer(target: self, action: "rightArrow:")
+        tapRecognizer4.allowedPressTypes = [NSNumber(integer: UIPressType.RightArrow.rawValue)];
+        self.view!.addGestureRecognizer(tapRecognizer4)
+    }
+    
+    
     func random() -> CGFloat {
         return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
     }
@@ -112,17 +175,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         // Determine where to spawn the monster along the Y axis
-        let actualY = random(min: monster.size.height/2, max: size.height - monster.size.height/2)
+        let actualX = random(min: 0, max: size.width)
+        let actualY = random(min: 0, max: size.height)
         
-        // Position the monster slightly off-screen along the right edge,
-        // and along a random position along the Y axis as calculated above
-        monster.position = CGPoint(x: size.width + monster.size.width/2, y: actualY)
+        let choice = Int(arc4random_uniform(4))
+        
+        switch choice {
+        case 0:
+            monster.position = CGPoint(x: 0, y: actualY)
+        case 1:
+            monster.position = CGPoint(x: size.width, y: actualY)
+        case 2:
+            monster.position = CGPoint(x: actualX, y: 0)
+        case 3:
+            monster.position = CGPoint(x: actualX, y: size.height)
+        default:
+            break
+        }
         
         monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
         monster.physicsBody?.dynamic = true // 2
         monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
         monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-        monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
+//        monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
         
         // Add the monster to the scene
         addChild(monster)
@@ -141,7 +216,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let gameOverScene = GameOverScene(size: self.size, won: false)
             self.view?.presentScene(gameOverScene, transition: reveal)
         }
-        monster.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+        monster.runAction(SKAction.sequence([actionMove]))
         
     }
     
