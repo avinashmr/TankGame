@@ -105,7 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(fireBullet),
-                SKAction.waitForDuration(0.75)
+                SKAction.waitForDuration(0.4)
                 ])
             ))
         
@@ -205,7 +205,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let direction = offset.normalized() * 200
         
-        projectile.physicsBody?.velocity = CGVectorMake(direction.x, direction.y)
+        projectile.physicsBody?.velocity = CGVectorMake(2*direction.x, 2*direction.y)
         
         
         addChild(projectile)
@@ -309,7 +309,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func projectileDidCollideWithGoal(projectile:SKSpriteNode) {
-        print("Goal")
+        print(goalCount)
         projectile.removeFromParent()
         ++self.goalCount
         
