@@ -51,24 +51,11 @@ extension Float  {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
-    
-    /*
-    override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 65
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
-        
-        self.addChild(myLabel)
-    }
-     */
-    
     var monstersDestroyed = 0
     
     // 1
     let player = SKSpriteNode(imageNamed: "tank")
-    let grass = SKSpriteNode(imageNamed: "grass")
+//    let grass = SKSpriteNode(imageNamed: "grass")
     
     override func didMoveToView(view: SKView) {
         
@@ -76,15 +63,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         setupControls()
 
-        grass.anchorPoint = CGPointMake(0.5, 0.5)
-        grass.size.height = size.height
-        grass.size.width = size.width
-        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
-        
-        addChild(grass)
         
         
-//        backgroundColor = SKColor.darkGrayColor()
+        backgroundColor = SKColor.darkGrayColor()
         
         // 3
         player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
@@ -93,6 +74,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
         if let physics = player.physicsBody {
             physics.affectedByGravity = false
+            physics.pinned = true
             physics.allowsRotation = true
             physics.dynamic = true;
             physics.categoryBitMask = PhysicsCategory.Player
@@ -104,9 +86,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addChild(player)
         
-        let vortexField = SKFieldNode.vortexField()
+        let vortexField = SKFieldNode.radialGravityField()
+        vortexField.strength = -10000
         vortexField.position = CGPoint(x: size.width/2, y: size.height/2)
         vortexField.strength = 1
+        vortexField.region = SKRegion(radius: 100)
+        vortexField.enabled = true
+        
+        
+        let circlePath = UIBezierPath(arcCenter: CGPoint(x: size.width/2,y: size.height/2), radius: CGFloat(20), startAngle: CGFloat(0), endAngle:CGFloat(M_PI * 2), clockwise: true)
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = circlePath.CGPath
+        
+        //change the fill color
+        shapeLayer.fillColor = UIColor.clearColor().CGColor
+        //you can change the stroke color
+        shapeLayer.strokeColor = UIColor.redColor().CGColor
+        //you can change the line width
+        shapeLayer.lineWidth = 3.0
+        
+        view.layer.addSublayer(shapeLayer)
+        
         
         addChild(vortexField)
         
@@ -145,7 +146,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
         projectile.physicsBody?.dynamic = true
-        projectile.physicsBody?.affectedByGravity = true
+//        projectile.physicsBody?.affectedByGravity = true
         
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
         projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
@@ -157,15 +158,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         
         let direction = offset.normalized()
-        
+        /*
         let shootAmount = direction * size.width
         
         let realDest = shootAmount + projectile.position
         
-        let actionMove = SKAction.moveTo(realDest, duration: 2.0)
+        let actionMove = SKAction.moveTo(realDest, duration: 5.0)
         
         let actionMoveDone = SKAction.removeFromParent()
         projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+        */
+    
+        
         
         addChild(projectile)
         
@@ -178,7 +182,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    
+    // MARK: - Gesture Recognizers
     func setupControls() {
         let uipgr = UIPanGestureRecognizer(target: self, action: "rotatePlayer:")
         
