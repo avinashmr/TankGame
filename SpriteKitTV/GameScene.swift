@@ -53,7 +53,7 @@ extension Float  {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    var monstersDestroyed = 0
+    var goalCount = 0
     
     // 1
     let player = SKSpriteNode(imageNamed: "tank")
@@ -66,6 +66,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupControls()
         
         setupBorders()
+        
+        
+        setupGoal()
 
         grass.anchorPoint = CGPointMake(0.5, 0.5)
         grass.size.height = size.height
@@ -125,6 +128,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
         backgroundMusic.autoplayLooped = true
         addChild(backgroundMusic)
+    }
+    
+    func setupGoal() {
+        let circle = SKShapeNode(circleOfRadius: 40)
+        circle.position = CGPointMake(size.width - 100, 100)
+        circle.strokeColor = SKColor.greenColor()
+        circle.glowWidth = 40.0
+        circle.alpha = 0.8
+        circle.fillColor = SKColor.greenColor()
+        circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
+        circle.physicsBody?.dynamic = true
+        circle.physicsBody?.affectedByGravity = false
+        circle.physicsBody?.categoryBitMask = PhysicsCategory.Goal
+        circle.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
+        circle.physicsBody?.collisionBitMask = PhysicsCategory.None
+        
+        let startingPosition = circle.position
+        let finalPosition = CGPoint(x: circle.position.x, y: size.height-100)
+        let action1 = SKAction.moveTo(finalPosition, duration: Double(4.0))
+        let action2 = SKAction.moveTo(startingPosition, duration: Double(4.0))
+        circle.runAction(SKAction.repeatActionForever(SKAction.sequence([action1, action2])))
+            
+        
+        addChild(circle)
+
+        
     }
     
     func setupBorders() {
@@ -283,8 +312,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func projectileDidCollideWithBorder(projectile:SKSpriteNode) {
-        print("Border")
+//        print("Border")
         projectile.removeFromParent()
+    }
+    
+    func projectileDidCollideWithGoal(projectile:SKSpriteNode) {
+        print("Goal")
+        projectile.removeFromParent()
+        ++self.goalCount
+        
+        if (goalCount > 30) {
+            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: true)
+            self.view?.presentScene(gameOverScene, transition: reveal)
+        }
+        
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
@@ -302,8 +344,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ((firstBody.categoryBitMask & PhysicsCategory.Projectile != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Border != 0)) {
-            projectileDidCollideWithBorder(firstBody.node as! SKSpriteNode)
+                if let node = firstBody.node {
+                    projectileDidCollideWithBorder(node as! SKSpriteNode)
+                }
         }
+        
+        if ((firstBody.categoryBitMask & PhysicsCategory.Projectile != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Goal != 0)) {
+                if let node = firstBody.node {
+                    projectileDidCollideWithGoal(node as! SKSpriteNode)
+                }
+        }
+        
     }
 }
 
