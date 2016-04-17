@@ -106,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        addChild(radialGravityField)
         
         
-        self.physicsWorld.gravity = CGVectorMake(0.0, 0.1)
+        self.physicsWorld.gravity = CGVectorMake(0.0, 0.3)
         physicsWorld.contactDelegate = self
 
         
@@ -131,28 +131,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setupGoal() {
-        let circle = SKShapeNode(circleOfRadius: 40)
-        circle.position = CGPointMake(100, size.height - 100)
-        circle.strokeColor = SKColor.greenColor()
-        circle.glowWidth = 40.0
-        circle.alpha = 0.8
-        circle.fillColor = SKColor.greenColor()
-        circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
-        circle.physicsBody?.dynamic = false
-        circle.physicsBody?.affectedByGravity = false
-        circle.physicsBody?.categoryBitMask = PhysicsCategory.Goal
-        circle.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
-        circle.physicsBody?.collisionBitMask = PhysicsCategory.None
         
-        let startingPosition = circle.position
+        let goal = SKSpriteNode(imageNamed: "nemo")
+        
+        goal.xScale = 0.1
+        goal.yScale = 0.1
+        goal.position = CGPointMake(100, size.height - 100)
+        goal.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "nemo"), size: goal.size)
+        if let physics = goal.physicsBody {
+            physics.dynamic = false
+            physics.affectedByGravity = false
+            physics.categoryBitMask = PhysicsCategory.Goal
+            physics.contactTestBitMask = PhysicsCategory.Projectile
+            physics.collisionBitMask = PhysicsCategory.None
+        }
+        
+        let startingPosition = goal.position
         let finalPosition = CGPoint(x: size.width - 100, y: size.height - 100)
         let action1 = SKAction.moveTo(finalPosition, duration: Double(4.0))
         let action2 = SKAction.moveTo(startingPosition, duration: Double(4.0))
-        circle.runAction(SKAction.repeatActionForever(SKAction.sequence([action1, action2])))
+        goal.runAction(SKAction.repeatActionForever(SKAction.sequence([action1, action2])))
             
         
-        addChild(circle)
-
+        addChild(goal)
         
     }
     
@@ -191,10 +192,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func fireBullet () {
         
-        let projectile = SKSpriteNode(imageNamed: "projectile")
+        let projectile = SKSpriteNode(imageNamed: "bubble")
         projectile.position = player.position
-        projectile.xScale = 3.0
-        projectile.yScale = 3.0
+        projectile.xScale = 0.1
+        projectile.yScale = 0.1
 
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
         if let physics = projectile.physicsBody {
@@ -226,31 +227,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let actualY = random(min: 200, max: size.height - 200)
         
-        
-        let circle = SKShapeNode(circleOfRadius: 40)
-        circle.position = CGPointMake(size.width, actualY)
-        circle.strokeColor = SKColor.redColor()
-        circle.glowWidth = 40.0
-        circle.alpha = 0.8
-        circle.fillColor = SKColor.yellowColor()
-        circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
-        circle.physicsBody?.dynamic = true
-        circle.physicsBody?.affectedByGravity = false
-        circle.physicsBody?.categoryBitMask = PhysicsCategory.None
-        circle.physicsBody?.contactTestBitMask = PhysicsCategory.None
-        circle.physicsBody?.collisionBitMask = PhysicsCategory.None
-        addChild(circle)
+        let fish2 = SKSpriteNode(imageNamed: "fish2")
+        fish2.xScale = 0.3
+        fish2.yScale = 0.3
+        fish2.position = CGPointMake(size.width, actualY)
+        fish2.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "fish2"), size: fish2.size)
+        if let physics = fish2.physicsBody {
+            physics.dynamic = true
+            physics.affectedByGravity = false
+            physics.categoryBitMask = PhysicsCategory.Monster
+            physics.contactTestBitMask = PhysicsCategory.Projectile
+            physics.collisionBitMask = PhysicsCategory.None
+        }
+        addChild(fish2)
         
         // Determine where to spawn the monster along the Y axis
         
         let finalPosition = CGPoint(x: 0.0, y: actualY)
-
-        
-
-        
+     
 //        var field : SKFieldNode
         
-        let randomInt = Int(arc4random_uniform(4))
+//        let randomInt = Int(arc4random_uniform(4))
         
 //        field = SKFieldNode.vortexField()
         let radialGravityField = SKFieldNode.radialGravityField()
@@ -258,8 +255,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        let radialGravityField = SKFieldNode.springField()
         
         radialGravityField.position = CGPoint(x: size.width, y: actualY)
-        radialGravityField.strength = 1
-        radialGravityField.falloff = 0.1
+        radialGravityField.strength = 5
+        radialGravityField.falloff = 0.5
         radialGravityField.physicsBody?.categoryBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.contactTestBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.collisionBitMask = PhysicsCategory.None
@@ -281,7 +278,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            self.view?.presentScene(gameOverScene, transition: reveal)
 //        }
         radialGravityField.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        circle.runAction(SKAction.sequence([actionMove,actionMoveDone]))
+        fish2.runAction(SKAction.sequence([actionMove,actionMoveDone]))
         
     }
     
@@ -328,7 +325,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func projectileDidCollideWithGoal(projectile:SKSpriteNode) {
-        print("Goal")
+//        print("Goal")
         projectile.removeFromParent()
         ++self.goalCount
         
@@ -339,6 +336,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
     }
+    
+    
+    func monsterDidCollideWithProjectile(projectile:SKSpriteNode) {
+        print("Monster")
+        projectile.removeFromParent()
+    }
+    
     
     func didBeginContact(contact: SKPhysicsContact) {
         
@@ -367,6 +371,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
         }
         
+        if ((firstBody.categoryBitMask & PhysicsCategory.Monster != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)) {
+                if let node = secondBody.node {
+                    monsterDidCollideWithProjectile(node as! SKSpriteNode)
+                }
+        }
     }
 }
 
