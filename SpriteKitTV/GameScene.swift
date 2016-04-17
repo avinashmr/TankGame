@@ -90,12 +90,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addChild(player)
         
-        let radialGravityField = SKFieldNode.radialGravityField()
-        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
-        radialGravityField.strength = 10
-        radialGravityField.region = SKRegion(radius: 200.0)
-        
-        addChild(radialGravityField)
+//        let radialGravityField = SKFieldNode.radialGravityField()
+//        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
+//        radialGravityField.strength = 10
+//        radialGravityField.region = SKRegion(radius: 200.0)
+//        
+//        addChild(radialGravityField)
         
         
         self.physicsWorld.gravity = CGVectorMake(0, 0)
@@ -105,14 +105,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(fireBullet),
-                SKAction.waitForDuration(1.0)
+                SKAction.waitForDuration(0.25)
                 ])
             ))
         
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addField),
-                SKAction.waitForDuration(1.0)
+                SKAction.waitForDuration(3.0)
                 ])
             ))
         
@@ -131,6 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.position = player.position
         projectile.xScale = 3.0
         projectile.yScale = 3.0
+        
         
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
         if let physics = projectile.physicsBody {
@@ -164,31 +165,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         monster.colorBlendFactor = 0.9
         monster.zRotation = CGFloat(-90.0.degreesToRadians)
         
+        let actualY = random(min: 0, max: size.height)
+        
+        
+        let circle = SKShapeNode(circleOfRadius: 40)
+        circle.position = CGPointMake(size.width, actualY)
+        circle.strokeColor = SKColor.redColor()
+        circle.glowWidth = 40.0
+        circle.alpha = 0.6
+        circle.fillColor = SKColor.yellowColor()
+        circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
+        circle.physicsBody?.dynamic = true
+        circle.physicsBody?.affectedByGravity = false
+        circle.physicsBody?.collisionBitMask = PhysicsCategory.None
+        addChild(circle)
         
         // Determine where to spawn the monster along the Y axis
-        let actualY = random(min: 0, max: size.height)
+        
         monster.position = CGPoint(x: size.width, y: actualY)
         
         let finalPosition = CGPoint(x: 0.0, y: actualY)
 
         
         // Add the monster to the scene
-        addChild(monster)
+        //addChild(monster)
+        
+        let radialGravityField = SKFieldNode.radialGravityField()
+        radialGravityField.position = CGPoint(x: size.width, y: actualY)
+        radialGravityField.strength = 1
+        radialGravityField.region = SKRegion(radius: 200.0)
+        
+        addChild(radialGravityField)
         
         
         // Determine speed of the monster
-        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
+        let actualDuration = random(min: CGFloat(4.0), max: CGFloat(12.0))
         
         // Create the actions
         let actionMove = SKAction.moveTo(finalPosition, duration: Double(actualDuration))
         let actionMoveDone = SKAction.removeFromParent()
         
-        let loseAction = SKAction.runBlock() {
-            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: false)
-            self.view?.presentScene(gameOverScene, transition: reveal)
-        }
-        monster.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+//        let loseAction = SKAction.runBlock() {
+//            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+//            let gameOverScene = GameOverScene(size: self.size, won: false)
+//            self.view?.presentScene(gameOverScene, transition: reveal)
+//        }
+        radialGravityField.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+        circle.runAction(SKAction.sequence([actionMove,actionMoveDone]))
         
     }
     
@@ -225,55 +248,55 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return random() * (max - min) + min
     }
     
-    func addMonster() {
-
-//        let radialGravityField = SKFieldNode.radialGravityField()
-//        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
-//        radialGravityField.strength = -1.0
+//    func addMonster() {
+//
+////        let radialGravityField = SKFieldNode.radialGravityField()
+////        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
+////        radialGravityField.strength = -1.0
+////        
+////        addChild(radialGravityField)
 //        
-//        addChild(radialGravityField)
-        
-        
-        // Create sprite
-        let monster = SKSpriteNode(imageNamed: "tank")
-        monster.color = UIColor.redColor()
-        
-        monster.colorBlendFactor = 0.9
-        monster.zRotation = CGFloat(-90.0.degreesToRadians)
-        
-        
-        // Determine where to spawn the monster along the Y axis
-        let actualY = random(min: 0, max: size.height)
-        monster.position = CGPoint(x: size.width, y: actualY)
-        
-        
-        
-        monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
-        monster.physicsBody?.dynamic = true // 2
-        monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
-        monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster // 5
-        
-        // Add the monster to the scene
-        addChild(monster)
-        
-        
-        
-        // Determine speed of the monster
-        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
-        
-        // Create the actions
-        let actionMove = SKAction.moveTo(player.position, duration: 10.0)
-        let actionMoveDone = SKAction.removeFromParent()
-        
-        let loseAction = SKAction.runBlock() {
-            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: false)
-            self.view?.presentScene(gameOverScene, transition: reveal)
-        }
-        monster.runAction(SKAction.sequence([actionMove]))
-        
-    }
+//        
+//        // Create sprite
+//        let monster = SKSpriteNode(imageNamed: "tank")
+//        monster.color = UIColor.redColor()
+//        
+//        monster.colorBlendFactor = 0.9
+//        monster.zRotation = CGFloat(-90.0.degreesToRadians)
+//        
+//        
+//        // Determine where to spawn the monster along the Y axis
+//        let actualY = random(min: 0, max: size.height)
+//        monster.position = CGPoint(x: size.width, y: actualY)
+//        
+//        
+//        
+//        monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
+//        monster.physicsBody?.dynamic = true // 2
+//        monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
+//        monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
+//        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster // 5
+//        
+//        // Add the monster to the scene
+//        addChild(monster)
+//        
+//        
+//        
+//        // Determine speed of the monster
+//        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
+//        
+//        // Create the actions
+//        let actionMove = SKAction.moveTo(player.position, duration: 10.0)
+//        let actionMoveDone = SKAction.removeFromParent()
+//        
+//        let loseAction = SKAction.runBlock() {
+//            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+//            let gameOverScene = GameOverScene(size: self.size, won: false)
+//            self.view?.presentScene(gameOverScene, transition: reveal)
+//        }
+//        monster.runAction(SKAction.sequence([actionMove]))
+//        
+//    }
     
    
     override func update(currentTime: CFTimeInterval) {
