@@ -60,9 +60,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "submarine")
     let grass = SKSpriteNode(imageNamed: "grass")
+    var label = SKLabelNode()
+    
     
     override func didMoveToView(view: SKView) {
-        
+    
+        label.text = "Goal: 0"
+        label.fontSize = 70
+        label.horizontalAlignmentMode = .Left
+        label.fontColor = SKColor.whiteColor()
+        label.position = CGPoint(x: 10, y: size.height - 70)
+        addChild(label)
         
         
         setupControls()
@@ -136,7 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ))
         backgroundColor = SKColor.blackColor()
         
-        self.physicsWorld.gravity = CGVectorMake(0.0, 0.3)
+        self.physicsWorld.gravity = CGVectorMake(0.0, 1.0)
         physicsWorld.contactDelegate = self
         
         
@@ -204,6 +212,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
 
+    func setupText(count: Int) {
+        let label = SKLabelNode(fontNamed: "Chalkduster")
+        label.text = String(count)
+        label.fontSize = 40
+        label.fontColor = SKColor.whiteColor()
+        label.position = CGPoint(x: size.width - 40, y: size.height - 40)
+        addChild(label)
+    }
     
     func fireBullet () {
         
@@ -421,6 +437,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.removeFromParent()
         ++self.goalCount
         
+        updateTextLabel(goalCount)
+        
         if (goalCount > 30) {
             let reveal = SKTransition.flipHorizontalWithDuration(0.5)
             let gameOverScene = GameOverScene(size: self.size, won: true)
@@ -429,6 +447,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    func updateTextLabel(number: Int) {
+        label.text = "Goal: \(number)"
+        
+        
+    }
     
     func monsterDidCollideWithProjectile(projectile:SKSpriteNode) {
 //        print("Monster")
@@ -438,6 +461,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func monsterDidCollideWithPlayer(projectile:SKSpriteNode) {
 //        print("Monster and player")
         damageCount++
+        print(damageCount)
+        player.color = UIColor.redColor()
+        if damageCount > 100 {
+            player.colorBlendFactor = 0.1
+        }
+        if damageCount > 300 {
+            player.colorBlendFactor = 0.3
+        }
+        if damageCount > 500 {
+            player.colorBlendFactor = 0.5
+        }
+        if damageCount > 700 {
+            player.colorBlendFactor = 0.7
+        }
+        if damageCount > 900 {
+            player.colorBlendFactor = 0.9
+        }
+        
+        if (damageCount > 1000) {
+            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: false)
+            self.view?.presentScene(gameOverScene, transition: reveal)
+        }
     }
     
     

@@ -20,7 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E1DC01CA1CC2B8E40030E80C /* SpriteKitTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpriteKitTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1DC01CA1CC2B8E40030E80C /* Feed The Fish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Feed The Fish.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1DC01CD1CC2B8E40030E80C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E1DC01D11CC2B8E40030E80C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		E1DC01D31CC2B8E40030E80C /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		E1DC01CB1CC2B8E40030E80C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E1DC01CA1CC2B8E40030E80C /* SpriteKitTV.app */,
+				E1DC01CA1CC2B8E40030E80C /* Feed The Fish.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,9 +90,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E1DC01C91CC2B8E40030E80C /* SpriteKitTV */ = {
+		E1DC01C91CC2B8E40030E80C /* Feed The Fish */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E1DC01DF1CC2B8E40030E80C /* Build configuration list for PBXNativeTarget "SpriteKitTV" */;
+			buildConfigurationList = E1DC01DF1CC2B8E40030E80C /* Build configuration list for PBXNativeTarget "Feed The Fish" */;
 			buildPhases = (
 				E1DC01C61CC2B8E40030E80C /* Sources */,
 				E1DC01C71CC2B8E40030E80C /* Frameworks */,
@@ -102,9 +102,9 @@
 			);
 			dependencies = (
 			);
-			name = SpriteKitTV;
+			name = "Feed The Fish";
 			productName = SpriteKitTV;
-			productReference = E1DC01CA1CC2B8E40030E80C /* SpriteKitTV.app */;
+			productReference = E1DC01CA1CC2B8E40030E80C /* Feed The Fish.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -123,7 +123,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E1DC01C51CC2B8E40030E80C /* Build configuration list for PBXProject "SpriteKitTV" */;
+			buildConfigurationList = E1DC01C51CC2B8E40030E80C /* Build configuration list for PBXProject "Feed The Fish" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -136,7 +136,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E1DC01C91CC2B8E40030E80C /* SpriteKitTV */,
+				E1DC01C91CC2B8E40030E80C /* Feed The Fish */,
 			);
 		};
 /* End PBXProject section */
@@ -276,7 +276,7 @@
 				INFOPLIST_FILE = SpriteKitTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.avinash-apps.SpriteKitTV";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Feed The Fish";
 				PROVISIONING_PROFILE = "";
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
@@ -292,7 +292,7 @@
 				INFOPLIST_FILE = SpriteKitTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.avinash-apps.SpriteKitTV";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Feed The Fish";
 				PROVISIONING_PROFILE = "";
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
@@ -301,7 +301,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E1DC01C51CC2B8E40030E80C /* Build configuration list for PBXProject "SpriteKitTV" */ = {
+		E1DC01C51CC2B8E40030E80C /* Build configuration list for PBXProject "Feed The Fish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E1DC01DD1CC2B8E40030E80C /* Debug */,
@@ -310,7 +310,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E1DC01DF1CC2B8E40030E80C /* Build configuration list for PBXNativeTarget "SpriteKitTV" */ = {
+		E1DC01DF1CC2B8E40030E80C /* Build configuration list for PBXNativeTarget "Feed The Fish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E1DC01E01CC2B8E40030E80C /* Debug */,

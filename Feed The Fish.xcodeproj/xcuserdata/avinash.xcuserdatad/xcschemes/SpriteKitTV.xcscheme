@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E1DC01C91CC2B8E40030E80C"
-               BuildableName = "SpriteKitTV.app"
-               BlueprintName = "SpriteKitTV"
-               ReferencedContainer = "container:SpriteKitTV.xcodeproj">
+               BuildableName = "Feed The Fish.app"
+               BlueprintName = "Feed The Fish"
+               ReferencedContainer = "container:Feed The Fish.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1DC01C91CC2B8E40030E80C"
-            BuildableName = "SpriteKitTV.app"
-            BlueprintName = "SpriteKitTV"
-            ReferencedContainer = "container:SpriteKitTV.xcodeproj">
+            BuildableName = "Feed The Fish.app"
+            BlueprintName = "Feed The Fish"
+            ReferencedContainer = "container:Feed The Fish.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1DC01C91CC2B8E40030E80C"
-            BuildableName = "SpriteKitTV.app"
-            BlueprintName = "SpriteKitTV"
-            ReferencedContainer = "container:SpriteKitTV.xcodeproj">
+            BuildableName = "Feed The Fish.app"
+            BlueprintName = "Feed The Fish"
+            ReferencedContainer = "container:Feed The Fish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1DC01C91CC2B8E40030E80C"
-            BuildableName = "SpriteKitTV.app"
-            BlueprintName = "SpriteKitTV"
-            ReferencedContainer = "container:SpriteKitTV.xcodeproj">
+            BuildableName = "Feed The Fish.app"
+            BlueprintName = "Feed The Fish"
+            ReferencedContainer = "container:Feed The Fish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
