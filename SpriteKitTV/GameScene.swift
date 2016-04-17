@@ -87,6 +87,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // 3
         player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
         player.zRotation = CGFloat(90.0.degreesToRadians)
+        
+        player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
+        if let physics = player.physicsBody {
+            physics.affectedByGravity = false
+            physics.allowsRotation = false
+            physics.dynamic = true;
+            physics.categoryBitMask = PhysicsCategory.Player
+            physics.contactTestBitMask = PhysicsCategory.Monster
+            physics.collisionBitMask = PhysicsCategory.None
+        }
+        
+        
         // 4
         addChild(player)
         
@@ -124,13 +136,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let newPosition = player.position + GameConstants.moveLeft
         //        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
         let action2 = SKAction.rotateByAngle(CGFloat(M_PI/2.0), duration:GameConstants.moveDuration)
-        self.player.runAction(action2)
+        self.player.runAction(action2) { () -> Void in
+            self.upArrow(gesture)
+        }
     }
     func rightArrow(gesture: UITapGestureRecognizer) {
         let newPosition = player.position + GameConstants.moveRight
         //        let action = SKAction.moveTo(newPosition, duration:GameConstants.moveDuration)
         let action2 = SKAction.rotateByAngle(CGFloat(-M_PI/2.0), duration:GameConstants.moveDuration)
-        self.player.runAction(action2)
+        self.player.runAction(action2) { () -> Void in
+            self.upArrow(gesture)
+        }
     }
     
     
@@ -197,7 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         monster.physicsBody?.dynamic = true // 2
         monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
         monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-//        monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
+        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster | PhysicsCategory.Player // 5
         
         // Add the monster to the scene
         addChild(monster)
@@ -241,7 +257,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
         projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
-        projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
+        projectile.physicsBody?.collisionBitMask = PhysicsCategory.All
         projectile.physicsBody?.usesPreciseCollisionDetection = true
         
         // 3 - Determine offset of location to projectile
