@@ -14,6 +14,8 @@ struct PhysicsCategory {
     static let Monster   : UInt32 = 0b1       // 1
     static let Projectile: UInt32 = 0b10      // 2
     static let Player    : UInt32 = 0b100     // 4
+    static let Goal      : UInt32 = 0b1000    // 8
+    static let Border    : UInt32 = 0b10000   // 16
 }
 
 class GameConstants {
@@ -61,6 +63,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         setupControls()
+        
+        setupBorders()
 
         grass.anchorPoint = CGPointMake(0.5, 0.5)
         grass.size.height = size.height
@@ -112,7 +116,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addField),
-                SKAction.waitForDuration(3.0)
+                SKAction.waitForDuration(5.0)
                 ])
             ))
         
@@ -122,7 +126,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(backgroundMusic)
     }
     
-
+    func setupBorders() {
+        
+        let border1 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: size.width*2, height: 100))
+        let border2 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: size.width*2, height: 100))
+        let border3 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 100, height: size.height*2))
+        let border4 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 100, height: size.height*2))
+        
+        border1.position = CGPoint(x: size.width/2, y: size.height + 200)
+        border2.position = CGPoint(x: size.width/2, y: -200)
+        border3.position = CGPoint(x: size.width + 200, y: size.height/2)
+        border4.position = CGPoint(x: -200, y: size.height/2)
+        
+        let borders = [border1, border2, border3, border4]
+        
+        for border in borders {
+            border.physicsBody = SKPhysicsBody(rectangleOfSize: border.size)
+        
+            if let physics = border.physicsBody {
+                physics.pinned = true
+                physics.allowsRotation = false
+                physics.affectedByGravity = false
+                physics.dynamic = false
+                physics.categoryBitMask = PhysicsCategory.Border
+                physics.contactTestBitMask = PhysicsCategory.Projectile
+                physics.collisionBitMask = PhysicsCategory.None
+                physics.usesPreciseCollisionDetection = true
+            }
+            addChild(border)
+        }
+        
+    }
 
     
     func fireBullet () {
@@ -247,77 +281,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return random() * (max - min) + min
     }
     
-//    func addMonster() {
-//
-////        let radialGravityField = SKFieldNode.radialGravityField()
-////        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
-////        radialGravityField.strength = -1.0
-////        
-////        addChild(radialGravityField)
-//        
-//        
-//        // Create sprite
-//        let monster = SKSpriteNode(imageNamed: "tank")
-//        monster.color = UIColor.redColor()
-//        
-//        monster.colorBlendFactor = 0.9
-//        monster.zRotation = CGFloat(-90.0.degreesToRadians)
-//        
-//        
-//        // Determine where to spawn the monster along the Y axis
-//        let actualY = random(min: 0, max: size.height)
-//        monster.position = CGPoint(x: size.width, y: actualY)
-//        
-//        
-//        
-//        monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
-//        monster.physicsBody?.dynamic = true // 2
-//        monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
-//        monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
-//        monster.physicsBody?.collisionBitMask = PhysicsCategory.Monster // 5
-//        
-//        // Add the monster to the scene
-//        addChild(monster)
-//        
-//        
-//        
-//        // Determine speed of the monster
-//        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
-//        
-//        // Create the actions
-//        let actionMove = SKAction.moveTo(player.position, duration: 10.0)
-//        let actionMoveDone = SKAction.removeFromParent()
-//        
-//        let loseAction = SKAction.runBlock() {
-//            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-//            let gameOverScene = GameOverScene(size: self.size, won: false)
-//            self.view?.presentScene(gameOverScene, transition: reveal)
-//        }
-//        monster.runAction(SKAction.sequence([actionMove]))
-//        
-//    }
-    
-   
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
     
-    func projectileDidCollideWithMonster(projectile:SKSpriteNode, monster:SKSpriteNode) {
-        print("Hit")
+    func projectileDidCollideWithBorder(projectile:SKSpriteNode) {
+        print("Border")
         projectile.removeFromParent()
-        monster.removeFromParent()
-        
-//        monstersDestroyed += 1
-//        if (monstersDestroyed > 30) {
-//            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-//            let gameOverScene = GameOverScene(size: self.size, won: true)
-//            self.view?.presentScene(gameOverScene, transition: reveal)
-//        }
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
         
-        // 1
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
@@ -328,12 +302,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        // 2
-//        if ((firstBody.categoryBitMask & PhysicsCategory.Monster != 0) &&
-//            (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)) {
-//            projectileDidCollideWithMonster(firstBody.node as! SKSpriteNode, monster: secondBody.node as! SKSpriteNode)
-//        }
-//        
+        
+        if ((firstBody.categoryBitMask & PhysicsCategory.Projectile != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Border != 0)) {
+            projectileDidCollideWithBorder(firstBody.node as! SKSpriteNode)
+        }
     }
 }
 
