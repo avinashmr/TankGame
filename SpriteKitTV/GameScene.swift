@@ -81,8 +81,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgroundColor = SKColor.blackColor()
         
         // 3
-        player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
-        player.zRotation = CGFloat(90.0.degreesToRadians)
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
+        player.zRotation = CGFloat(180.0.degreesToRadians)
         player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
         if let physics = player.physicsBody {
             physics.affectedByGravity = false
@@ -106,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        addChild(radialGravityField)
         
         
-        self.physicsWorld.gravity = CGVectorMake(0.1, 0)
+        self.physicsWorld.gravity = CGVectorMake(0.0, 0.1)
         physicsWorld.contactDelegate = self
 
         
@@ -132,20 +132,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupGoal() {
         let circle = SKShapeNode(circleOfRadius: 40)
-        circle.position = CGPointMake(size.width - 100, 100)
+        circle.position = CGPointMake(100, size.height - 100)
         circle.strokeColor = SKColor.greenColor()
         circle.glowWidth = 40.0
         circle.alpha = 0.8
         circle.fillColor = SKColor.greenColor()
         circle.physicsBody = SKPhysicsBody(circleOfRadius: 40)
-        circle.physicsBody?.dynamic = true
+        circle.physicsBody?.dynamic = false
         circle.physicsBody?.affectedByGravity = false
         circle.physicsBody?.categoryBitMask = PhysicsCategory.Goal
         circle.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         circle.physicsBody?.collisionBitMask = PhysicsCategory.None
         
         let startingPosition = circle.position
-        let finalPosition = CGPoint(x: circle.position.x, y: size.height-100)
+        let finalPosition = CGPoint(x: size.width - 100, y: size.height - 100)
         let action1 = SKAction.moveTo(finalPosition, duration: Double(4.0))
         let action2 = SKAction.moveTo(startingPosition, duration: Double(4.0))
         circle.runAction(SKAction.repeatActionForever(SKAction.sequence([action1, action2])))
@@ -196,7 +196,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.xScale = 3.0
         projectile.yScale = 3.0
 
-        projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
+        projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
         if let physics = projectile.physicsBody {
             physics.dynamic = true
             physics.affectedByGravity = true
@@ -224,7 +224,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addField() {
 
         
-        let actualY = random(min: 0, max: size.height)
+        let actualY = random(min: 200, max: size.height - 200)
         
         
         let circle = SKShapeNode(circleOfRadius: 40)
@@ -246,9 +246,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let finalPosition = CGPoint(x: 0.0, y: actualY)
 
         
+
+        
+//        var field : SKFieldNode
+        
+        let randomInt = Int(arc4random_uniform(4))
+        
+//        field = SKFieldNode.vortexField()
         let radialGravityField = SKFieldNode.radialGravityField()
+//        let radialGravityField = SKFieldNode.dragField()
+//        let radialGravityField = SKFieldNode.springField()
+        
         radialGravityField.position = CGPoint(x: size.width, y: actualY)
         radialGravityField.strength = 1
+        radialGravityField.falloff = 0.1
         radialGravityField.physicsBody?.categoryBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.contactTestBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.collisionBitMask = PhysicsCategory.None
@@ -288,9 +299,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         switch gesture.state {
         case .Changed:
-            if (relativeVelocity.y < 1) {
+            if (relativeVelocity.x < 1) {
                 player.physicsBody?.angularVelocity = GameConstants.playerAngularVelocity
-            } else if (relativeVelocity.y > -1) {
+            } else if (relativeVelocity.x > -1) {
                 player.physicsBody?.angularVelocity = -GameConstants.playerAngularVelocity
             }
         default:
