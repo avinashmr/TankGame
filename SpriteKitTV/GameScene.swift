@@ -58,7 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var goalCount = 0
     var damageCount = 0
     // 1
-    let player = SKSpriteNode(imageNamed: "tank")
+    let player = SKSpriteNode(imageNamed: "submarine")
     let grass = SKSpriteNode(imageNamed: "grass")
     
     override func didMoveToView(view: SKView) {
@@ -98,8 +98,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupPlayer() {
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
-        player.zRotation = CGFloat(180.0.degreesToRadians)
-        player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
+        player.xScale = 0.2
+        player.yScale = 0.2
+//        player.zRotation = CGFloat(180.0.degreesToRadians)
+//        player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
+        player.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "submarine"), size: player.size)
         if let physics = player.physicsBody {
             physics.affectedByGravity = false
             physics.allowsRotation = false
@@ -214,7 +217,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             physics.angularVelocity = 5.0
         }
         
-        let offset = CGPoint(x: sin(player.zRotation), y: -cos(player.zRotation))
+        let offset = CGPoint(x: sin(player.zRotation), y: cos(player.zRotation))
 
         
         let direction = offset.normalized() * 200
