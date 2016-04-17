@@ -130,8 +130,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let projectile = SKSpriteNode(imageNamed: "projectile")
         projectile.position = player.position
         projectile.xScale = 3.0
-        projectile.yScale = 3.0
-        
         
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
         if let physics = projectile.physicsBody {
