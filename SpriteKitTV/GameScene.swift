@@ -73,7 +73,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
 //        addChild(grass)
         
-        
         backgroundColor = SKColor.blackColor()
         
         // 3
@@ -294,6 +293,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
+        
+        
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
             firstBody = contact.bodyA
             secondBody = contact.bodyB
@@ -305,7 +306,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ((firstBody.categoryBitMask & PhysicsCategory.Projectile != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Border != 0)) {
-            projectileDidCollideWithBorder(firstBody.node as! SKSpriteNode)
+                
+                guard let node = firstBody.node as? SKSpriteNode else{
+                    return
+                }
+                projectileDidCollideWithBorder(node)
         }
     }
 }
