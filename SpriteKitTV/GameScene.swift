@@ -57,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var goalCount = 0
     var damageCount = 0
-    // 1
+    
     let player = SKSpriteNode(imageNamed: "submarine")
     let grass = SKSpriteNode(imageNamed: "grass")
     
@@ -70,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupGoal()
         setupPlayer()
         setupBackground()
-        
+      
         
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
