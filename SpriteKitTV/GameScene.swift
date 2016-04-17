@@ -21,6 +21,8 @@ struct PhysicsCategory {
 
 class GameConstants {
     static let playerAngularVelocity = CGFloat(1)
+    static let playerVelocity = 100.0
+    
     static let moveDistance = CGFloat(5.0)
     static let moveDuration = 0.1
     static let moveLeft = CGPoint(x: -moveDistance, y: 0.0)
@@ -64,51 +66,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         setupControls()
-        
         setupBorders()
-        
-        
         setupGoal()
-
-        grass.anchorPoint = CGPointMake(0.5, 0.5)
-        grass.size.height = size.height
-        grass.size.width = size.width
-        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        setupPlayer()
+        setupBackground()
         
-//        addChild(grass)
-        
-        
-        backgroundColor = SKColor.blackColor()
-        
-        // 3
-        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
-        player.zRotation = CGFloat(180.0.degreesToRadians)
-        player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
-        if let physics = player.physicsBody {
-            physics.affectedByGravity = false
-            physics.allowsRotation = true
-            physics.dynamic = true
-            physics.categoryBitMask = PhysicsCategory.Player
-            physics.contactTestBitMask = PhysicsCategory.Monster
-            physics.collisionBitMask = PhysicsCategory.None
-            physics.pinned = true
-//            physics.angularDamping = 1.0
-        }
-        
-        
-        addChild(player)
-        
-//        let radialGravityField = SKFieldNode.radialGravityField()
-//        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
-//        radialGravityField.strength = 10
-//        radialGravityField.region = SKRegion(radius: 200.0)
-//        
-//        addChild(radialGravityField)
-        
-        
-        self.physicsWorld.gravity = CGVectorMake(0.0, 0.3)
-        physicsWorld.contactDelegate = self
-
         
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
@@ -120,9 +82,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addField),
-                SKAction.waitForDuration(3.0)
+                SKAction.waitForDuration(5.0)
                 ])
             ))
+        
+        runAction(SKAction.repeatActionForever(
+            SKAction.sequence([
+                SKAction.runBlock(addField2),
+                SKAction.waitForDuration(3.3)
+                ])
+            ))
+        
+        
+    }
+    
+    func setupPlayer() {
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
+        player.zRotation = CGFloat(180.0.degreesToRadians)
+        player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
+        if let physics = player.physicsBody {
+            physics.affectedByGravity = false
+            physics.allowsRotation = false
+            physics.dynamic = true
+            physics.categoryBitMask = PhysicsCategory.Player
+            physics.contactTestBitMask = PhysicsCategory.Monster
+            physics.collisionBitMask = PhysicsCategory.Border | PhysicsCategory.Monster | PhysicsCategory.Goal
+            //            physics.pinned = true
+            //            physics.angularDamping = 1.0
+        }
+        
+        
+        addChild(player)
+    }
+    
+    func setupBackground() {
+        grass.anchorPoint = CGPointMake(0.5, 0.5)
+        grass.size.height = size.height
+        grass.size.width = size.width
+        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        
+        //        addChild(grass)
+        
+        
+        backgroundColor = SKColor.blackColor()
+        
+        self.physicsWorld.gravity = CGVectorMake(0.0, 0.3)
+        physicsWorld.contactDelegate = self
         
         
         let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
@@ -164,10 +169,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let border3 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 100, height: size.height*2))
         let border4 = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 100, height: size.height*2))
         
-        border1.position = CGPoint(x: size.width/2, y: size.height + 200)
-        border2.position = CGPoint(x: size.width/2, y: -200)
-        border3.position = CGPoint(x: size.width + 200, y: size.height/2)
-        border4.position = CGPoint(x: -200, y: size.height/2)
+        border1.position = CGPoint(x: size.width/2, y: size.height + 100)
+        border2.position = CGPoint(x: size.width/2, y: -100)
+        border3.position = CGPoint(x: size.width + 100, y: size.height/2)
+        border4.position = CGPoint(x: -100, y: size.height/2)
         
         let borders = [border1, border2, border3, border4]
         
@@ -225,21 +230,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addField() {
 
         
-        let actualY = random(min: 200, max: size.height - 200)
+        let actualY = random(min: size.height/2, max: size.height - 200)
         
-        let fish2 = SKSpriteNode(imageNamed: "fish2")
-        fish2.xScale = 0.3
-        fish2.yScale = 0.3
-        fish2.position = CGPointMake(size.width, actualY)
-        fish2.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "fish2"), size: fish2.size)
-        if let physics = fish2.physicsBody {
+        let fish = SKSpriteNode(imageNamed: "fish2")
+        fish.xScale = 0.3
+        fish.yScale = 0.3
+        fish.position = CGPointMake(size.width, actualY)
+        fish.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "fish2"), alphaThreshold: 0.999, size: fish.size)
+        if let physics = fish.physicsBody {
             physics.dynamic = true
             physics.affectedByGravity = false
             physics.categoryBitMask = PhysicsCategory.Monster
             physics.contactTestBitMask = PhysicsCategory.Projectile
             physics.collisionBitMask = PhysicsCategory.None
         }
-        addChild(fish2)
+        addChild(fish)
         
         // Determine where to spawn the monster along the Y axis
         
@@ -255,12 +260,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        let radialGravityField = SKFieldNode.springField()
         
         radialGravityField.position = CGPoint(x: size.width, y: actualY)
-        radialGravityField.strength = 5
-        radialGravityField.falloff = 0.5
+        radialGravityField.strength = 2
+        radialGravityField.falloff = 0.6
         radialGravityField.physicsBody?.categoryBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.contactTestBitMask = PhysicsCategory.None
         radialGravityField.physicsBody?.collisionBitMask = PhysicsCategory.None
-        radialGravityField.region = SKRegion(radius: 200.0)
+        radialGravityField.region = SKRegion(radius: 300.0)
         
         addChild(radialGravityField)
         
@@ -278,19 +283,78 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            self.view?.presentScene(gameOverScene, transition: reveal)
 //        }
         radialGravityField.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        fish2.runAction(SKAction.sequence([actionMove,actionMoveDone]))
+        fish.runAction(SKAction.sequence([actionMove,actionMoveDone]))
         
     }
     
+    func addField2() {
+        
+        
+        let actualY = random(min: 200, max: size.height/2)
+        
+        let fish = SKSpriteNode(imageNamed: "fish1")
+        fish.xScale = 0.3
+        fish.yScale = 0.3
+        fish.position = CGPointMake(0.0, actualY)
+        fish.physicsBody = SKPhysicsBody(circleOfRadius: fish.size.height/2)
+        if let physics = fish.physicsBody {
+            physics.dynamic = true
+            physics.affectedByGravity = false
+            physics.categoryBitMask = PhysicsCategory.Monster
+            physics.contactTestBitMask = PhysicsCategory.Projectile
+            physics.collisionBitMask = PhysicsCategory.None
+        }
+        addChild(fish)
+        
+        // Determine where to spawn the monster along the Y axis
+        
+        let finalPosition = CGPoint(x: size.width, y: actualY)
+        
+        //        var field : SKFieldNode
+        
+        //        let randomInt = Int(arc4random_uniform(4))
+        
+        //        field = SKFieldNode.vortexField()
+        let radialGravityField = SKFieldNode.radialGravityField()
+        //        let radialGravityField = SKFieldNode.dragField()
+        //        let radialGravityField = SKFieldNode.springField()
+        
+        radialGravityField.position = CGPoint(x: 0.0, y: actualY)
+        radialGravityField.strength = 3
+        radialGravityField.falloff = 0.6
+        radialGravityField.physicsBody?.categoryBitMask = PhysicsCategory.None
+        radialGravityField.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        radialGravityField.physicsBody?.collisionBitMask = PhysicsCategory.None
+        radialGravityField.region = SKRegion(radius: 400.0)
+        
+        addChild(radialGravityField)
+        
+        
+        // Determine speed of the monster
+        let actualDuration = random(min: CGFloat(4.0), max: CGFloat(8.0))
+        
+        // Create the actions
+        let actionMove = SKAction.moveTo(finalPosition, duration: Double(actualDuration))
+        let actionMoveDone = SKAction.removeFromParent()
+        
+        //        let loseAction = SKAction.runBlock() {
+        //            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+        //            let gameOverScene = GameOverScene(size: self.size, won: false)
+        //            self.view?.presentScene(gameOverScene, transition: reveal)
+        //        }
+        radialGravityField.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+        fish.runAction(SKAction.sequence([actionMove,actionMoveDone]))
+        
+    }
     
     func setupControls() {
-        let uipgr = UIPanGestureRecognizer(target: self, action: "rotatePlayer:")
+        let uipgr = UIPanGestureRecognizer(target: self, action: "slidePlayer:")
         
         view?.addGestureRecognizer(uipgr)
     }
     
     func rotatePlayer(gesture: UIPanGestureRecognizer) {
-        let relativeLocation = gesture.translationInView(self.view)
+//        let relativeLocation = gesture.translationInView(self.view)
         let relativeVelocity = gesture.velocityInView(self.view)
 //        print("\(relativeLocation) : \(relativeVelocity)")
         
@@ -303,6 +367,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         default:
             player.physicsBody?.angularVelocity = 0.0
+        }
+    }
+    
+    func slidePlayer(gesture: UIPanGestureRecognizer) {
+//        let relativeLocation = gesture.translationInView(self.view)
+        let relativeVelocity = gesture.velocityInView(self.view)
+        //        print("\(relativeLocation) : \(relativeVelocity)")
+        
+        switch gesture.state {
+        case .Changed:
+            let dx = (player.physicsBody?.velocity.dx)! + relativeVelocity.x/100.0
+            let dy = (player.physicsBody?.velocity.dy)! - relativeVelocity.y/100.0
+            
+            player.physicsBody?.velocity = CGVectorMake(dx, dy)
+            
+            
+        default:
+            break
         }
     }
     
@@ -339,7 +421,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func monsterDidCollideWithProjectile(projectile:SKSpriteNode) {
-        print("Monster")
+//        print("Monster")
         projectile.removeFromParent()
     }
     
