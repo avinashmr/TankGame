@@ -57,7 +57,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // 1
     let player = SKSpriteNode(imageNamed: "tank")
-    let grass = SKSpriteNode(imageNamed: "grass")
     
     override func didMoveToView(view: SKView) {
         
@@ -66,13 +65,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupControls()
         
         setupBorders()
-
-        grass.anchorPoint = CGPointMake(0.5, 0.5)
-        grass.size.height = size.height
-        grass.size.width = size.width
-        grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
-        
-//        addChild(grass)
         
         
         backgroundColor = SKColor.blackColor()
