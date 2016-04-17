@@ -17,8 +17,8 @@ struct PhysicsCategory {
 }
 
 class GameConstants {
-    static let playerAngularVelocity = CGFloat(1.0)
-    static let moveDistance = CGFloat(20.0)
+    static let playerAngularVelocity = CGFloat(1)
+    static let moveDistance = CGFloat(5.0)
     static let moveDuration = 0.1
     static let moveLeft = CGPoint(x: -moveDistance, y: 0.0)
     static let moveRight = CGPoint(x: moveDistance, y: 0.0)
@@ -50,20 +50,6 @@ extension Float  {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    
-    
-    /*
-    override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 65
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
-        
-        self.addChild(myLabel)
-    }
-     */
-    
     var monstersDestroyed = 0
     
     // 1
@@ -81,34 +67,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         grass.size.width = size.width
         grass.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
         
-        addChild(grass)
+//        addChild(grass)
         
         
-//        backgroundColor = SKColor.darkGrayColor()
+        backgroundColor = SKColor.blackColor()
         
         // 3
         player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
         player.zRotation = CGFloat(90.0.degreesToRadians)
-        
         player.physicsBody = SKPhysicsBody(rectangleOfSize: player.size)
         if let physics = player.physicsBody {
             physics.affectedByGravity = false
             physics.allowsRotation = true
-            physics.dynamic = true;
+            physics.dynamic = true
             physics.categoryBitMask = PhysicsCategory.Player
             physics.contactTestBitMask = PhysicsCategory.Monster
             physics.collisionBitMask = PhysicsCategory.None
+            physics.pinned = true
 //            physics.angularDamping = 1.0
         }
         
         
         addChild(player)
         
-        let vortexField = SKFieldNode.vortexField()
-        vortexField.position = CGPoint(x: size.width/2, y: size.height/2)
-        vortexField.strength = 1
+        let radialGravityField = SKFieldNode.radialGravityField()
+        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
+        radialGravityField.strength = 10
+        radialGravityField.region = SKRegion(radius: 200.0)
         
-        addChild(vortexField)
+        addChild(radialGravityField)
         
         
         self.physicsWorld.gravity = CGVectorMake(0, 0)
@@ -142,30 +129,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let projectile = SKSpriteNode(imageNamed: "projectile")
         projectile.position = player.position
+        projectile.xScale = 3.0
+        projectile.yScale = 3.0
         
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
-        projectile.physicsBody?.dynamic = true
-        projectile.physicsBody?.affectedByGravity = true
-        
-        projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
-        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
-        projectile.physicsBody?.collisionBitMask = PhysicsCategory.All
-        projectile.physicsBody?.usesPreciseCollisionDetection = true
-        
+        if let physics = projectile.physicsBody {
+            physics.dynamic = true
+            physics.affectedByGravity = true
+            physics.allowsRotation = true
+            physics.categoryBitMask = PhysicsCategory.Projectile
+            physics.contactTestBitMask = PhysicsCategory.Monster
+            physics.collisionBitMask = PhysicsCategory.None
+            physics.usesPreciseCollisionDetection = true
+        }
         
         let offset = CGPoint(x: sin(player.zRotation), y: -cos(player.zRotation))
 
         
-        let direction = offset.normalized()
+        let direction = offset.normalized() * 200
         
-        let shootAmount = direction * size.width
+        projectile.physicsBody?.velocity = CGVectorMake(direction.x, direction.y)
         
-        let realDest = shootAmount + projectile.position
-        
-        let actionMove = SKAction.moveTo(realDest, duration: 2.0)
-        
-        let actionMoveDone = SKAction.removeFromParent()
-        projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
         addChild(projectile)
         
@@ -213,6 +197,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addMonster() {
 
+//        let radialGravityField = SKFieldNode.radialGravityField()
+//        radialGravityField.position = CGPoint(x: size.width/2, y: size.height/2)
+//        radialGravityField.strength = -1.0
+//        
+//        addChild(radialGravityField)
+        
         
         // Create sprite
         let monster = SKSpriteNode(imageNamed: "tank")
@@ -223,23 +213,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         // Determine where to spawn the monster along the Y axis
-        let actualX = random(min: 0, max: size.width)
         let actualY = random(min: 0, max: size.height)
+        monster.position = CGPoint(x: size.width, y: actualY)
         
-        let choice = Int(arc4random_uniform(4))
         
-        switch choice {
-        case 0:
-            monster.position = CGPoint(x: 0, y: actualY)
-        case 1:
-            monster.position = CGPoint(x: size.width, y: actualY)
-        case 2:
-            monster.position = CGPoint(x: actualX, y: 0)
-        case 3:
-            monster.position = CGPoint(x: actualX, y: size.height)
-        default:
-            break
-        }
         
         monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
         monster.physicsBody?.dynamic = true // 2
@@ -268,60 +245,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-//    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        
-//        runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
-//        
-//        // 1 - Choose one of the touches to work with
-//        guard let touch = touches.first else {
-//            return
-//        }
-//        let touchLocation = touch.locationInNode(self)
-////        print(touchLocation)
-//        
-//        
-//        
-//        
-//        // 2 - Set up initial location of projectile
-//        let projectile = SKSpriteNode(imageNamed: "projectile")
-//        projectile.position = player.position
-//        
-//        projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width*2)
-//        projectile.physicsBody?.dynamic = true
-//        projectile.physicsBody?.affectedByGravity = true
-//        
-//        projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
-//        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
-//        projectile.physicsBody?.collisionBitMask = PhysicsCategory.All
-//        projectile.physicsBody?.usesPreciseCollisionDetection = true
-//        
-//        // 3 - Determine offset of location to projectile
-//        let offset = touchLocation - projectile.position
-//        
-//        // 4 - Bail out if you are shooting down or backwards
-//        if (offset.x < 0) { return }
-//        
-//        // 5 - OK to add now - you've double checked position
-//        addChild(projectile)
-//        
-//        // 6 - Get the direction of where to shoot
-//        let direction = offset.normalized()
-//        
-//        // 7 - Make it shoot far enough to be guaranteed off screen
-//        let shootAmount = direction * 1000
-//        
-//        // 8 - Add the shoot amount to the current position
-//        let realDest = shootAmount + projectile.position
-//        
-//        // 9 - Create the actions
-//        let actionMove = SKAction.moveTo(realDest, duration: 2.0)
-//        
-//        let actionMoveDone = SKAction.removeFromParent()
-//        projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-//        
-//    }
-    
-
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
