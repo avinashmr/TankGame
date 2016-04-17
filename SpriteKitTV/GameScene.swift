@@ -65,6 +65,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupControls()
         
         setupBorders()
+        
+        
+        setupGoal()
 
         
         backgroundColor = SKColor.blackColor()
